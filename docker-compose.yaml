@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  frontend:
+    image: ghcr.io/hikka-io/hikka-next:latest
+    ports:
+      - 127.0.0.1:3000:3000
+    depends_on:
+      - backend
+
+  backend:
+    image: ghcr.io/hikka-io/hikka:latest
+    ports:
+      - 127.0.0.1:8000:8000
+    depends_on:
+      - postgres
+      - meilisearch
+
+  sync:
+    image: ghcr.io/hikka-io/hikka:latest
+    command: poetry run python sync
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:16.3-alpine3.20
+    environment:
+      POSTGRES_DB: hikka
+      POSTGRES_USER: ${PG_USER:-hikka_admin}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-hikka_pwd}
+    volumes:
+      - ./data/pg_data:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:5432:5432
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.9
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey}
+      MEILI_ENV: ${MEILI_ENV:-development}
+    volumes:
+      - ./data/meili_data:/meili_data
+    ports:
+      - 127.0.0.1:7700:7700
+
+
+##### Observability services #####
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports:
+      - 127.0.0.1:3300:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus:v2.53.1
+    ports:
+      - 127.0.0.1:9090:9090
+    volumes:
+      - prom_data:/prometheus
+
+
+volumes:
+  grafana_data:
+  prom_data:
+
+
