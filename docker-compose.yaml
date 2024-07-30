@@ -3,6 +3,7 @@ version: "3.9"
 services:
   frontend:
     image: ghcr.io/hikka-io/hikka-next:latest
+    restart: always
     ports:
       - 127.0.0.1:3000:3000
     depends_on:
@@ -10,6 +11,9 @@ services:
 
   backend:
     image: ghcr.io/hikka-io/hikka:latest
+    restart: always
+    volumes:
+      - ./conf/backend/settings.toml:/project/settings.toml
     ports:
       - 127.0.0.1:8000:8000
     depends_on:
@@ -18,12 +22,16 @@ services:
 
   sync:
     image: ghcr.io/hikka-io/hikka:latest
-    command: poetry run python sync
+    command: poetry run python sync.py
+    restart: always
+    volumes:
+      - ./conf/backend/settings.toml:/project/settings.toml
     depends_on:
       - backend
 
   postgres:
     image: postgres:16.3-alpine3.20
+    restart: always
     environment:
       POSTGRES_DB: hikka
       POSTGRES_USER: ${PG_USER:-hikka_admin}
@@ -35,6 +43,7 @@ services:
 
   meilisearch:
     image: getmeili/meilisearch:v1.9
+    restart: always
     environment:
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey}
       MEILI_ENV: ${MEILI_ENV:-development}
@@ -48,6 +57,7 @@ services:
 
   grafana:
     image: grafana/grafana:11.1.0
+    restart: always
     ports:
       - 127.0.0.1:3300:3000
     volumes:
@@ -55,6 +65,7 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.53.1
+    restart: always
     ports:
       - 127.0.0.1:9090:9090
     volumes:
