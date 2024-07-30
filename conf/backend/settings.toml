@@ -1,0 +1,49 @@
+[default]
+    [default.oauth.google]
+    client_id = "xxx.apps.googleusercontent.com"
+    client_secret = "secret"
+    redirect_uri = "http://localhost:5173"
+    enabled = true
+
+    [default.database]
+    endpoint = "postgresql+asyncpg://hikka_admin:hikka_pwd@postgres:5432/hikka"
+
+    [default.mailgun]
+    endpoint = "https://api.eu.mailgun.net/v3/mail.hikka.io/messages"
+    token = "token"
+    email_from = "Hikka <noreply@mail.hikka.io>"
+
+    [default.meilisearch]
+    url = "http://meilisearch:7700"
+    api_key = "masterKey"
+
+    [default.backend]
+    plausible = "http://127.0.0.1:8000"
+    aggregator = "http://aggregator.local/database"
+    sitemap_path = "/Users/user/Work/Hikka/sitemap"
+    auth_emails = []
+    origins = [
+        "http://localhost:8000",
+        "http://localhost:3000",
+        "https://hikka.io",
+    ]
+
+    [default.backup]
+    token = "backup_token"
+
+    [default.captcha]
+    secret_key = "captcha_secret"
+    site_key = "captcha_key"
+    test = "fake_captcha"
+
+    [default.s3]
+    key = "s3_key"
+    secret = "s3_secret"
+    endpoint = "https://endpoint.s3.provider.com"
+    bucket = "hikka"
+
+    [default.profiling]
+    enabled = true
+    trigger = "query"  # [query/all]
+    path = ".profile_info"
+    profiling_secret = "secret"
