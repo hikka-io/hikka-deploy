@@ -1,57 +1,55 @@
+
 services:
-    frontend:
-        image: ghcr.io/hikka-io/hikka-next:latest
-        restart: always
-        ports:
-            - 127.0.0.1:3000:3000
-        depends_on:
-            - backend
+  frontend:
+    image: ghcr.io/hikka-io/hikka-next:latest
+    restart: always
+    ports:
+      - 127.0.0.1:3000:3000
+    depends_on:
+      - backend
 
-    backend:
-        image: ghcr.io/hikka-io/hikka:latest
-        command: poetry run gunicorn "app:create_app()" --workers 4 --worker-class uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
-        restart: always
-        volumes:
-            - ./conf/backend/settings.toml:/project/settings.toml
-        ports:
-            - 127.0.0.1:8888:8000
-        depends_on:
-            - postgres
-            - meilisearch
+  backend:
+    image: ghcr.io/hikka-io/hikka:latest
+    restart: always
+    volumes:
+      - ./conf/backend/settings.toml:/project/settings.toml
+    ports:
+      - 127.0.0.1:8888:8000
+    depends_on:
+      - postgres
+      - meilisearch
 
-    sync:
-        image: ghcr.io/hikka-io/hikka:latest
-        command: poetry run python sync.py
-        restart: always
-        volumes:
-            - ./conf/backend/settings.toml:/project/settings.toml
-        depends_on:
-            - backend
+  sync:
+    image: ghcr.io/hikka-io/hikka:latest
+    command: poetry run python sync.py
+    restart: always
+    volumes:
+      - ./conf/backend/settings.toml:/project/settings.toml
+    depends_on:
+      - backend
 
-    postgres:
-        image: postgres:16.3-alpine3.20
-        restart: always
-        shm_size: 6gb
-        environment:
-            POSTGRES_DB: hikka
-            POSTGRES_USER: ${PG_USER:-hikka_admin}
-            POSTGRES_PASSWORD: ${PG_PASSWORD:-hikka_pwd}
-        volumes:
-            #- ./hikka_db.sql:/docker-entrypoint-initdb.d/init.sql
-            - ./postgresql.conf:/var/lib/postgresql/data/postgresql.conf
-            - ./data/pg_data:/var/lib/postgresql/data
-        ports:
-            - 127.0.0.1:5432:5432
+  postgres:
+    image: postgres:16.3-alpine3.20
+    restart: always
+    shm_size: 2gb
+    environment:
+      POSTGRES_DB: hikka
+      POSTGRES_USER: ${PG_USER:-hikka_admin}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-hikka_pwd}
+    volumes:
+      - ./data/pg_data:/var/lib/postgresql/data
+      - ./conf/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      #- ./hikka_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 127.0.0.1:5432:5432
 
-    meilisearch:
-        image: getmeili/meilisearch:v1.9
-        # command: meilisearch --import-dump /meilisearch.dump --master-key=${MEILI_MASTER_KEY:-masterKey}
-        restart: always
-        environment:
-            MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey}
-            MEILI_ENV: ${MEILI_ENV:-development}
-        volumes:
-            # - ./meilisearch.dump:/meilisearch.dump
-            - ./data/meili_data:/meili_data
-        ports:
-            - 127.0.0.1:7700:7700
+  meilisearch:
+    image: getmeili/meilisearch:v1.9
+    restart: always
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey}
+      MEILI_ENV: ${MEILI_ENV:-development}
+    volumes:
+      - ./data/meili_data:/meili_data
+    ports:
+      - 127.0.0.1:7700:7700
