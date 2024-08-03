@@ -1,0 +1,4 @@
+include:
+  - docker/app.yml
+  - docker/monitoring.yml
+  - docker/plausible.yml
