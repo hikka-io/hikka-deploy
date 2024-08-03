@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   frontend:
@@ -11,7 +10,6 @@ services:
 
   backend:
     image: ghcr.io/hikka-io/hikka:latest
-    command: poetry run gunicorn "app:create_app()" --workers 4 --worker-class uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
     restart: always
     volumes:
       - ./conf/backend/settings.toml:/project/settings.toml
@@ -33,53 +31,25 @@ services:
   postgres:
     image: postgres:16.3-alpine3.20
     restart: always
-    shm_size: 6gb
+    shm_size: 2gb
     environment:
       POSTGRES_DB: hikka
       POSTGRES_USER: ${PG_USER:-hikka_admin}
       POSTGRES_PASSWORD: ${PG_PASSWORD:-hikka_pwd}
     volumes:
-      #- ./hikka_db.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./conf/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
       - ./data/pg_data:/var/lib/postgresql/data
+      - ./conf/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      #- ./hikka_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 127.0.0.1:5432:5432
 
   meilisearch:
     image: getmeili/meilisearch:v1.9
-    # command: meilisearch --import-dump /meilisearch.dump --master-key=${MEILI_MASTER_KEY:-masterKey}
     restart: always
     environment:
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey}
       MEILI_ENV: ${MEILI_ENV:-development}
     volumes:
-      # - ./meilisearch.dump:/meilisearch.dump
       - ./data/meili_data:/meili_data
     ports:
       - 127.0.0.1:7700:7700
-
-
-##### Observability services #####
-
-  grafana:
-    image: grafana/grafana:11.1.0
-    restart: always
-    ports:
-      - 127.0.0.1:3300:3300
-    volumes:
-      - grafana_data:/var/lib/grafana
-
-  prometheus:
-    image: prom/prometheus:v2.53.1
-    restart: always
-    ports:
-      - 127.0.0.1:9090:9090
-    volumes:
-      - prom_data:/prometheus
-
-
-volumes:
-  grafana_data:
-  prom_data:
-
-
