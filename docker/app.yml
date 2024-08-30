@@ -14,10 +14,11 @@ services:
     volumes:
       - ./conf/backend/settings.toml:/project/settings.toml
     ports:
-      - 127.0.0.1:8888:8000
+      - 127.0.0.1:8001-8004:8000
+    deploy:
+      replicas: 4
     depends_on:
-      - postgres
-      - meilisearch
+      - sync
 
   sync:
     image: ghcr.io/hikka-io/hikka:latest
@@ -26,7 +27,8 @@ services:
     volumes:
       - ./conf/backend/settings.toml:/project/settings.toml
     depends_on:
-      - backend
+      - postgres
+      - meilisearch
 
   postgres:
     image: postgres:16.3-alpine3.20
