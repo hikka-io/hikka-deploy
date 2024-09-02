@@ -22,7 +22,7 @@ services:
 
   sync:
     image: ghcr.io/hikka-io/hikka:latest
-    command: alembic upgrade head && python sync.py
+    command: sh -c "alembic upgrade head && python sync.py"
     restart: always
     volumes:
       - ./conf/backend/settings.toml:/project/settings.toml
