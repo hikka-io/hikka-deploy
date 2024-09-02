@@ -2,6 +2,16 @@ name: Deploy all services to host
 
 on:
   workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to deploy'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - backend
+        - frontend
 
 env:
   REGISTRY: ghcr.io
@@ -26,5 +36,5 @@ jobs:
           script: |
             docker login ${{ env.REGISTRY }} -u ${{ github.actor }} -p ${{ github.token }}
             docker compose pull
-            docker compose up -d
+            docker compose up -d ${{ inputs.service != 'all' && inputs.service }}
             docker logout ${{ env.REGISTRY }}
