@@ -36,5 +36,5 @@ jobs:
           script: |
             docker login ${{ env.REGISTRY }} -u ${{ github.actor }} -p ${{ github.token }}
             docker compose pull
-            docker compose up -d ${{ inputs.service != 'all' && inputs.service }}
+            docker compose up -d ${{ inputs.service != 'all' && inputs.service || '' }}
             docker logout ${{ env.REGISTRY }}
