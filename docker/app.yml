@@ -26,6 +26,7 @@ services:
     restart: always
     volumes:
       - ./conf/backend/settings.toml:/project/settings.toml
+      - ./sitemap:/project/sitemap
     depends_on:
       - postgres
       - meilisearch

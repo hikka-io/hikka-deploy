@@ -20,7 +20,7 @@
     [default.backend]
     plausible = "http://127.0.0.1:8000"
     aggregator = "http://aggregator.local/database"
-    sitemap_path = "/Users/user/Work/Hikka/sitemap"
+    sitemap_path = "/project/sitemap"
     auth_emails = []
     origins = [
         "http://localhost:8000",
