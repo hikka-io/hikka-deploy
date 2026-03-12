@@ -12,6 +12,7 @@ on:
         - all
         - backend
         - frontend
+        - frontend-dev
 
 env:
   REGISTRY: ghcr.io
