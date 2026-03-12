@@ -1,10 +1,17 @@
-
 services:
   frontend:
     image: ghcr.io/hikka-io/hikka-next:latest
     restart: always
     ports:
       - 127.0.0.1:3000:3000
+    depends_on:
+      - backend
+
+  frontend-dev:
+    image: ghcr.io/hikka-io/hikka-next:dev
+    restart: always
+    ports:
+      - 127.0.0.1:3001:3000
     depends_on:
       - backend
 
