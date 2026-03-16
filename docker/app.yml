@@ -15,6 +15,37 @@ services:
     depends_on:
       - backend
 
+  imgproxy:
+    image: ghcr.io/imgproxy/imgproxy:latest
+    restart: always
+    ports:
+      - 127.0.0.1:8005:8080
+    environment:
+      IMGPROXY_ALLOWED_SOURCES: "https://cdn.hikka.io/"
+      IMGPROXY_MAX_SRC_RESOLUTION: 50
+      IMGPROXY_MAX_SRC_FILE_SIZE: 20971520
+      IMGPROXY_MAX_ANIMATION_FRAMES: 100
+      IMGPROXY_ALLOW_LOOPBACK_SOURCE_ADDRESSES: "false"
+      IMGPROXY_ALLOW_LINK_LOCAL_SOURCE_ADDRESSES: "false"
+      IMGPROXY_TIMEOUT: 10
+      IMGPROXY_DOWNLOAD_TIMEOUT: 5
+      IMGPROXY_AUTO_WEBP: "true"
+      IMGPROXY_AUTO_AVIF: "true"
+      IMGPROXY_PREFERRED_FORMATS: "jpeg,png,gif"
+      IMGPROXY_TTL: 31536000
+      IMGPROXY_CACHE_CONTROL_PASSTHROUGH: "false"
+      IMGPROXY_SET_CANONICAL_HEADER: "true"
+      IMGPROXY_USE_ETAG: "true"
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
   backend:
     image: ghcr.io/hikka-io/hikka:latest
     restart: always
